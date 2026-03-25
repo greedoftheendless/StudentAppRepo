@@ -1,0 +1,531 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 100,
+      "title": "System Health",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [
+            { "color": "green", "value": null },
+            { "color": "yellow", "value": 60 },
+            { "color": "orange", "value": 75 },
+            { "color": "red", "value": 90 }
+          ]},
+          "unit": "percent", "min": 0, "max": 100
+        }
+      },
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 1 },
+      "id": 1,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showThresholdLabels": false, "showThresholdMarkers": true
+      },
+      "title": "CPU Usage",
+      "type": "gauge",
+      "targets": [{ "expr": "100 - (avg(rate(node_cpu_seconds_total{mode=\"idle\", instance=~\"$instance\"}[5m])) * 100)", "legendFormat": "CPU %", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [
+            { "color": "green", "value": null },
+            { "color": "yellow", "value": 60 },
+            { "color": "orange", "value": 75 },
+            { "color": "red", "value": 90 }
+          ]},
+          "unit": "percent", "min": 0, "max": 100
+        }
+      },
+      "gridPos": { "h": 6, "w": 6, "x": 6, "y": 1 },
+      "id": 2,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showThresholdLabels": false, "showThresholdMarkers": true
+      },
+      "title": "Memory Usage",
+      "type": "gauge",
+      "targets": [{ "expr": "(1 - (node_memory_MemAvailable_bytes{instance=~\"$instance\"} / node_memory_MemTotal_bytes{instance=~\"$instance\"})) * 100", "legendFormat": "Memory %", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [
+            { "color": "green", "value": null },
+            { "color": "yellow", "value": 60 },
+            { "color": "orange", "value": 75 },
+            { "color": "red", "value": 90 }
+          ]},
+          "unit": "percent", "min": 0, "max": 100
+        }
+      },
+      "gridPos": { "h": 6, "w": 6, "x": 12, "y": 1 },
+      "id": 3,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showThresholdLabels": false, "showThresholdMarkers": true
+      },
+      "title": "Disk Usage",
+      "type": "gauge",
+      "targets": [{ "expr": "(1 - (node_filesystem_avail_bytes{mountpoint=\"/\", instance=~\"$instance\"} / node_filesystem_size_bytes{mountpoint=\"/\", instance=~\"$instance\"})) * 100", "legendFormat": "Disk %", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] },
+          "unit": "s"
+        }
+      },
+      "gridPos": { "h": 6, "w": 6, "x": 18, "y": 1 },
+      "id": 4,
+      "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "title": "Container Uptime",
+      "type": "stat",
+      "targets": [{ "expr": "time() - process_start_time_seconds{job=\"student-app-api\"}", "legendFormat": "Uptime", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisCenteredZero": false, "axisColorMode": "text", "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "drawStyle": "line", "fillOpacity": 15, "gradientMode": "opacity", "hideFrom": { "legend": false, "tooltip": false, "viz": false }, "lineInterpolation": "smooth", "lineWidth": 2, "pointSize": 5, "scaleDistribution": { "type": "linear" }, "showPoints": "never", "spanNulls": false, "stacking": { "group": "A", "mode": "none" }, "thresholdsStyle": { "mode": "off" } },
+          "unit": "percent"
+        }
+      },
+      "gridPos": { "h": 7, "w": 12, "x": 0, "y": 7 },
+      "id": 5,
+      "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom" }, "tooltip": { "mode": "multi", "sort": "desc" } },
+      "title": "CPU Usage Over Time",
+      "type": "timeseries",
+      "targets": [{ "expr": "100 - (avg(rate(node_cpu_seconds_total{mode=\"idle\", instance=~\"$instance\"}[5m])) * 100)", "legendFormat": "CPU %", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisCenteredZero": false, "axisColorMode": "text", "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "drawStyle": "line", "fillOpacity": 15, "gradientMode": "opacity", "hideFrom": { "legend": false, "tooltip": false, "viz": false }, "lineInterpolation": "smooth", "lineWidth": 2, "pointSize": 5, "scaleDistribution": { "type": "linear" }, "showPoints": "never", "spanNulls": false, "stacking": { "group": "A", "mode": "none" }, "thresholdsStyle": { "mode": "off" } },
+          "unit": "bytes"
+        }
+      },
+      "gridPos": { "h": 7, "w": 12, "x": 12, "y": 7 },
+      "id": 6,
+      "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom" }, "tooltip": { "mode": "multi", "sort": "desc" } },
+      "title": "Memory Usage Over Time",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "node_memory_MemTotal_bytes{instance=~\"$instance\"} - node_memory_MemAvailable_bytes{instance=~\"$instance\"}", "legendFormat": "Used Memory", "refId": "A" },
+        { "expr": "node_memory_MemTotal_bytes{instance=~\"$instance\"}", "legendFormat": "Total Memory", "refId": "B" }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 14 },
+      "id": 101,
+      "title": "API Performance",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }] }, "unit": "reqps" } },
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 15 },
+      "id": 10,
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "title": "Total Requests / sec",
+      "type": "stat",
+      "targets": [{ "expr": "sum(rate(http_requests_total{job=\"student-app-api\"}[5m]))", "legendFormat": "req/s", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 0.5 }, { "color": "orange", "value": 0.8 }, { "color": "red", "value": 1.0 }] }, "unit": "s" } },
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 15 },
+      "id": 11,
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "title": "P95 Latency",
+      "type": "stat",
+      "targets": [{ "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=\"student-app-api\"}[5m])) by (le))", "legendFormat": "p95", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 0.8 }, { "color": "orange", "value": 1.5 }, { "color": "red", "value": 2.0 }] }, "unit": "s" } },
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 15 },
+      "id": 12,
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "title": "P99 Latency",
+      "type": "stat",
+      "targets": [{ "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{job=\"student-app-api\"}[5m])) by (le))", "legendFormat": "p99", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 2 }, { "color": "orange", "value": 5 }, { "color": "red", "value": 10 }] }, "unit": "percent" } },
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 15 },
+      "id": 13,
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "title": "Error Rate %",
+      "type": "stat",
+      "targets": [{ "expr": "(sum(rate(http_requests_total{job=\"student-app-api\", status=~\"[45]..\"}[5m])) / sum(rate(http_requests_total{job=\"student-app-api\"}[5m]))) * 100", "legendFormat": "Error %", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisCenteredZero": false, "axisColorMode": "text", "axisLabel": "Requests/s", "axisPlacement": "auto", "barAlignment": 0, "drawStyle": "line", "fillOpacity": 20, "gradientMode": "opacity", "hideFrom": { "legend": false, "tooltip": false, "viz": false }, "lineInterpolation": "smooth", "lineWidth": 2, "pointSize": 5, "scaleDistribution": { "type": "linear" }, "showPoints": "never", "spanNulls": false, "stacking": { "group": "A", "mode": "none" }, "thresholdsStyle": { "mode": "off" } },
+          "unit": "reqps"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 19 },
+      "id": 14,
+      "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom" }, "tooltip": { "mode": "multi", "sort": "desc" } },
+      "title": "HTTP Request Rate by Status",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "sum(rate(http_requests_total{job=\"student-app-api\", status=~\"2..\"}[5m]))", "legendFormat": "2xx Success", "refId": "A" },
+        { "expr": "sum(rate(http_requests_total{job=\"student-app-api\", status=~\"4..\"}[5m]))", "legendFormat": "4xx Client Error", "refId": "B" },
+        { "expr": "sum(rate(http_requests_total{job=\"student-app-api\", status=~\"5..\"}[5m]))", "legendFormat": "5xx Server Error", "refId": "C" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisCenteredZero": false, "axisColorMode": "text", "axisLabel": "Latency (s)", "axisPlacement": "auto", "barAlignment": 0, "drawStyle": "line", "fillOpacity": 10, "gradientMode": "opacity", "hideFrom": { "legend": false, "tooltip": false, "viz": false }, "lineInterpolation": "smooth", "lineWidth": 2, "pointSize": 5, "scaleDistribution": { "type": "linear" }, "showPoints": "never", "spanNulls": false, "stacking": { "group": "A", "mode": "none" }, "thresholdsStyle": { "mode": "line+area" } },
+          "unit": "s",
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "transparent", "value": null }, { "color": "red", "value": 1.0 }] }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 19 },
+      "id": 15,
+      "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom" }, "tooltip": { "mode": "multi", "sort": "desc" } },
+      "title": "Request Latency (p50 / p95 / p99)",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "histogram_quantile(0.50, sum(rate(http_request_duration_seconds_bucket{job=\"student-app-api\"}[5m])) by (le))", "legendFormat": "p50", "refId": "A" },
+        { "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=\"student-app-api\"}[5m])) by (le))", "legendFormat": "p95", "refId": "B" },
+        { "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{job=\"student-app-api\"}[5m])) by (le))", "legendFormat": "p99", "refId": "C" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisCenteredZero": false, "axisColorMode": "text", "axisLabel": "Requests/s", "axisPlacement": "auto", "fillOpacity": 80, "gradientMode": "none", "hideFrom": { "legend": false, "tooltip": false, "viz": false }, "lineWidth": 1, "scaleDistribution": { "type": "linear" } },
+          "unit": "reqps"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 27 },
+      "id": 16,
+      "options": { "barWidth": 0.7, "groupWidth": 0.7, "legend": { "calcs": [], "displayMode": "list", "placement": "bottom" }, "orientation": "horizontal", "showValue": "auto", "stacking": "none", "tooltip": { "mode": "multi", "sort": "desc" } },
+      "title": "Top API Endpoints by Usage",
+      "type": "barchart",
+      "targets": [{ "expr": "topk(10, sum(rate(http_requests_total{job=\"student-app-api\"}[5m])) by (handler))", "legendFormat": "{{handler}}", "refId": "A", "format": "table", "instant": true }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "palette-classic" }, "custom": { "hideFrom": { "legend": false, "tooltip": false, "viz": false } } },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "4xx" }, "properties": [{ "id": "color", "value": { "fixedColor": "orange", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "5xx" }, "properties": [{ "id": "color", "value": { "fixedColor": "red", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "2xx" }, "properties": [{ "id": "color", "value": { "fixedColor": "green", "mode": "fixed" } }] }
+        ]
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 27 },
+      "id": 17,
+      "options": { "legend": { "displayMode": "table", "placement": "right", "values": ["value", "percent"] }, "pieType": "donut", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "tooltip": { "mode": "single", "sort": "none" } },
+      "title": "Response Distribution by Status",
+      "type": "piechart",
+      "targets": [
+        { "expr": "sum(increase(http_requests_total{job=\"student-app-api\", status=~\"2..\"}[1h]))", "legendFormat": "2xx", "refId": "A" },
+        { "expr": "sum(increase(http_requests_total{job=\"student-app-api\", status=~\"4..\"}[1h]))", "legendFormat": "4xx", "refId": "B" },
+        { "expr": "sum(increase(http_requests_total{job=\"student-app-api\", status=~\"5..\"}[1h]))", "legendFormat": "5xx", "refId": "C" }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 35 },
+      "id": 102,
+      "title": "Authentication Metrics",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] }, "unit": "short" } },
+      "gridPos": { "h": 5, "w": 6, "x": 0, "y": 36 },
+      "id": 20,
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "title": "Login Successes (1h)",
+      "type": "stat",
+      "targets": [{ "expr": "sum(increase(auth_login_total{job=\"student-app-api\", status=\"success\"}[1h]))", "legendFormat": "Successes", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 10 }, { "color": "red", "value": 50 }] }, "unit": "short" } },
+      "gridPos": { "h": 5, "w": 6, "x": 6, "y": 36 },
+      "id": 21,
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "title": "Login Failures (1h)",
+      "type": "stat",
+      "targets": [{ "expr": "sum(increase(auth_login_total{job=\"student-app-api\", status=\"failure\"}[1h]))", "legendFormat": "Failures", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 80 }, { "color": "green", "value": 95 }] }, "unit": "percent", "min": 0, "max": 100 } },
+      "gridPos": { "h": 5, "w": 6, "x": 12, "y": 36 },
+      "id": 22,
+      "options": { "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "showThresholdLabels": false, "showThresholdMarkers": true },
+      "title": "Auth Success Rate %",
+      "type": "gauge",
+      "targets": [{ "expr": "(sum(rate(auth_login_total{job=\"student-app-api\", status=\"success\"}[5m])) / sum(rate(auth_login_total{job=\"student-app-api\"}[5m]))) * 100", "legendFormat": "Success Rate", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisCenteredZero": false, "axisColorMode": "text", "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "drawStyle": "line", "fillOpacity": 15, "gradientMode": "opacity", "hideFrom": { "legend": false, "tooltip": false, "viz": false }, "lineInterpolation": "smooth", "lineWidth": 2, "pointSize": 5, "scaleDistribution": { "type": "linear" }, "showPoints": "never", "spanNulls": false, "stacking": { "group": "A", "mode": "none" }, "thresholdsStyle": { "mode": "off" } },
+          "unit": "short"
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Failures" }, "properties": [{ "id": "color", "value": { "fixedColor": "red", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Successes" }, "properties": [{ "id": "color", "value": { "fixedColor": "green", "mode": "fixed" } }] }
+        ]
+      },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 41 },
+      "id": 23,
+      "options": { "legend": { "calcs": ["sum", "mean"], "displayMode": "table", "placement": "bottom" }, "tooltip": { "mode": "multi", "sort": "desc" } },
+      "title": "Login Attempts Over Time",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "sum(rate(auth_login_total{job=\"student-app-api\", status=\"success\"}[5m]))", "legendFormat": "Successes", "refId": "A" },
+        { "expr": "sum(rate(auth_login_total{job=\"student-app-api\", status=\"failure\"}[5m]))", "legendFormat": "Failures", "refId": "B" }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 49 },
+      "id": 103,
+      "title": "Student Operations",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }] }, "unit": "short" } },
+      "gridPos": { "h": 5, "w": 6, "x": 0, "y": 50 },
+      "id": 30,
+      "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "title": "Total Students in System",
+      "type": "stat",
+      "targets": [{ "expr": "student_total_count{job=\"student-app-api\"}", "legendFormat": "Total", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] }, "unit": "cpm" } },
+      "gridPos": { "h": 5, "w": 6, "x": 6, "y": 50 },
+      "id": 31,
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "title": "Students Created / min",
+      "type": "stat",
+      "targets": [{ "expr": "sum(rate(student_created_total{job=\"student-app-api\"}[5m])) * 60", "legendFormat": "Created/min", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "purple", "value": null }] }, "unit": "reqps" } },
+      "gridPos": { "h": 5, "w": 6, "x": 12, "y": 50 },
+      "id": 32,
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "title": "Add Student API (req/s)",
+      "type": "stat",
+      "targets": [{ "expr": "sum(rate(http_requests_total{job=\"student-app-api\", handler=~\".*/students/\", method=\"POST\"}[5m]))", "legendFormat": "POST /students", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "super-light-purple", "value": null }] }, "unit": "reqps" } },
+      "gridPos": { "h": 5, "w": 6, "x": 18, "y": 50 },
+      "id": 33,
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "title": "List Students API (req/s)",
+      "type": "stat",
+      "targets": [{ "expr": "sum(rate(http_requests_total{job=\"student-app-api\", handler=~\".*/students/\", method=\"GET\"}[5m]))", "legendFormat": "GET /students", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisCenteredZero": false, "axisColorMode": "text", "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "drawStyle": "line", "fillOpacity": 20, "gradientMode": "opacity", "hideFrom": { "legend": false, "tooltip": false, "viz": false }, "lineInterpolation": "smooth", "lineWidth": 2, "pointSize": 5, "scaleDistribution": { "type": "linear" }, "showPoints": "never", "spanNulls": false, "stacking": { "group": "A", "mode": "none" }, "thresholdsStyle": { "mode": "off" } },
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 55 },
+      "id": 34,
+      "options": { "legend": { "calcs": ["mean", "max", "sum"], "displayMode": "table", "placement": "bottom" }, "tooltip": { "mode": "multi", "sort": "desc" } },
+      "title": "Student Operations Over Time",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "sum(rate(student_created_total{job=\"student-app-api\"}[5m])) * 60", "legendFormat": "Students Created/min", "refId": "A" },
+        { "expr": "sum(rate(http_requests_total{job=\"student-app-api\", handler=~\".*/students/\", method=\"GET\"}[5m]))", "legendFormat": "List Students req/s", "refId": "B" },
+        { "expr": "sum(rate(http_requests_total{job=\"student-app-api\", handler=~\".*/students/\", method=\"POST\"}[5m]))", "legendFormat": "Add Student req/s", "refId": "C" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisCenteredZero": false, "axisColorMode": "text", "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "drawStyle": "line", "fillOpacity": 10, "gradientMode": "opacity", "hideFrom": { "legend": false, "tooltip": false, "viz": false }, "lineInterpolation": "smooth", "lineWidth": 2, "pointSize": 5, "scaleDistribution": { "type": "linear" }, "showPoints": "never", "spanNulls": false, "stacking": { "group": "A", "mode": "none" }, "thresholdsStyle": { "mode": "off" } },
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 55 },
+      "id": 35,
+      "options": { "legend": { "calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom" }, "tooltip": { "mode": "multi", "sort": "desc" } },
+      "title": "Total Student Count Over Time",
+      "type": "timeseries",
+      "targets": [{ "expr": "student_total_count{job=\"student-app-api\"}", "legendFormat": "Total Students", "refId": "A" }]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 63 },
+      "id": 104,
+      "title": "Database Metrics (PostgreSQL)",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 50 }, { "color": "red", "value": 95 }] }, "unit": "short", "min": 0 } },
+      "gridPos": { "h": 5, "w": 8, "x": 0, "y": 64 },
+      "id": 40,
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "title": "Active DB Connections",
+      "type": "stat",
+      "targets": [{ "expr": "pg_stat_activity_count{datname=\"studentdb\", state=\"active\"}", "legendFormat": "Active", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 0.5 }, { "color": "red", "value": 1.0 }] }, "unit": "s" } },
+      "gridPos": { "h": 5, "w": 8, "x": 8, "y": 64 },
+      "id": 41,
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "title": "Avg Query Execution Time",
+      "type": "stat",
+      "targets": [{ "expr": "rate(pg_stat_user_tables_seq_tup_read_total{datname=\"studentdb\"}[5m])", "legendFormat": "Tuples Read/s", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisCenteredZero": false, "axisColorMode": "text", "axisLabel": "Connections", "axisPlacement": "auto", "barAlignment": 0, "drawStyle": "line", "fillOpacity": 20, "gradientMode": "opacity", "hideFrom": { "legend": false, "tooltip": false, "viz": false }, "lineInterpolation": "smooth", "lineWidth": 2, "pointSize": 5, "scaleDistribution": { "type": "linear" }, "showPoints": "never", "spanNulls": false, "stacking": { "group": "A", "mode": "none" }, "thresholdsStyle": { "mode": "line" } },
+          "unit": "short",
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "transparent", "value": null }, { "color": "red", "value": 100 }] }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 69 },
+      "id": 44,
+      "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom" }, "tooltip": { "mode": "multi", "sort": "desc" } },
+      "title": "Database Connections Over Time",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "pg_stat_activity_count{datname=\"studentdb\", state=\"active\"}", "legendFormat": "Active", "refId": "A" },
+        { "expr": "pg_stat_activity_count{datname=\"studentdb\", state=\"idle\"}", "legendFormat": "Idle", "refId": "B" },
+        { "expr": "pg_settings_max_connections", "legendFormat": "Max Connections", "refId": "C" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "axisCenteredZero": false, "axisColorMode": "text", "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "drawStyle": "line", "fillOpacity": 10, "gradientMode": "opacity", "hideFrom": { "legend": false, "tooltip": false, "viz": false }, "lineInterpolation": "smooth", "lineWidth": 2, "pointSize": 5, "scaleDistribution": { "type": "linear" }, "showPoints": "never", "spanNulls": false, "stacking": { "group": "A", "mode": "none" }, "thresholdsStyle": { "mode": "off" } },
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 69 },
+      "id": 45,
+      "options": { "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom" }, "tooltip": { "mode": "multi", "sort": "desc" } },
+      "title": "DB Operations (Scans)",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "rate(pg_stat_user_tables_seq_scan_total{datname=\"studentdb\"}[5m])", "legendFormat": "Seq Scans/s ({{relname}})", "refId": "A" },
+        { "expr": "rate(pg_stat_user_tables_idx_scan_total{datname=\"studentdb\"}[5m])", "legendFormat": "Idx Scans/s ({{relname}})", "refId": "B" }
+      ]
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["student-app", "devops", "monitoring", "production"],
+  "templating": {
+    "list": [
+      {
+        "current": {},
+        "hide": 0,
+        "includeAll": false,
+        "label": "Datasource",
+        "multi": false,
+        "name": "datasource",
+        "options": [],
+        "query": "prometheus",
+        "refresh": 1,
+        "type": "datasource"
+      },
+      {
+        "current": {},
+        "datasource": { "type": "prometheus", "uid": "${datasource}" },
+        "definition": "label_values(node_cpu_seconds_total, instance)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Instance",
+        "multi": false,
+        "name": "instance",
+        "options": [],
+        "query": { "query": "label_values(node_cpu_seconds_total, instance)", "refId": "StandardVariableQuery" },
+        "refresh": 2,
+        "sort": 1,
+        "type": "query"
+      }
+    ]
+  },
+  "time": { "from": "now-1h", "to": "now" },
+  "timepicker": { "refresh_intervals": ["5s", "10s", "30s", "1m", "5m", "15m", "30m", "1h"] },
+  "timezone": "browser",
+  "title": "Student Management App - Production Dashboard",
+  "uid": "student-app-prod",
+  "version": 1
+}

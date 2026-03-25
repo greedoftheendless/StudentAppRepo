@@ -1,0 +1,74 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ── Backend Tests ────────────────────────────────────
+  backend-test:
+    runs-on: self-hosted
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Mark workspace as safe directory
+        run: git config --global --add safe.directory "${{ github.workspace }}"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run unit tests
+        run: python -m pytest tests/ -v --tb=short
+
+  # ── Frontend Tests ───────────────────────────────────
+  frontend-test:
+    runs-on: self-hosted
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Mark workspace as safe directory
+        run: git config --global --add safe.directory "${{ github.workspace }}"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Run unit tests
+        run: npm test
+
+  # ── Docker Build ─────────────────────────────────────
+  docker-build:
+    runs-on: self-hosted
+    needs: [backend-test, frontend-test]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Mark workspace as safe directory
+        run: git config --global --add safe.directory "${{ github.workspace }}"
+
+      - name: Build backend image
+        run: docker build -t student-app-backend:${{ github.sha }} ./backend
+
+      - name: Build frontend image
+        run: docker build -t student-app-frontend:${{ github.sha }} ./frontend
+
+      - name: Verify images
+        run: |
+          docker images | grep student-app

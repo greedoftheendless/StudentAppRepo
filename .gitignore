@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+.venv/
+*.egg-info/
+
+# Node
+node_modules/
+frontend/build/
+
+# Docker volumes
+pgdata/
+promdata/
+grafdata/
+
+# IDE
+.vscode/
+.idea/
+*.swp

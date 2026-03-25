@@ -1,0 +1,99 @@
+services:
+  # ── PostgreSQL ────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: studentapp-db
+    environment:
+      POSTGRES_USER: studentuser
+      POSTGRES_PASSWORD: studentpass
+      POSTGRES_DB: studentdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U studentuser -d studentdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ── Backend API ───────────────────────────────────────
+  backend:
+    build: ./backend
+    container_name: studentapp-api
+    environment:
+      DATABASE_URL: postgresql://studentuser:studentpass@postgres:5432/studentdb
+      SECRET_KEY: docker-compose-dev-secret-change-in-prod
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ── Frontend ──────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        REACT_APP_API_URL: ""
+    container_name: studentapp-ui
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  # ── Prometheus ────────────────────────────────────────
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    container_name: studentapp-prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/alert_rules.yml:/etc/prometheus/alert_rules.yml
+      - promdata:/prometheus
+    ports:
+      - "9090:9090"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  # ── pgAdmin ───────────────────────────────────────────
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: studentapp-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@studentapp.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5051:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - pgadmindata:/var/lib/pgadmin
+    restart: unless-stopped
+
+  # ── Grafana ───────────────────────────────────────────
+  grafana:
+    image: grafana/grafana:11.1.0
+    container_name: studentapp-grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - grafdata:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    ports:
+      - "3001:3000"
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  promdata:
+  grafdata:
+  pgadmindata:

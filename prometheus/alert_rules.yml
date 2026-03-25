@@ -1,0 +1,74 @@
+groups:
+  - name: student_app_alerts
+    rules:
+      # ── API Error Rate > 5 % ───────────────────────────
+      - alert: HighApiErrorRate
+        expr: |
+          (
+            sum(rate(http_requests_total{job="student-app-api", status=~"[45].."}[5m]))
+            /
+            sum(rate(http_requests_total{job="student-app-api"}[5m]))
+          ) * 100 > 5
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "API error rate above 5%"
+          description: "Current error rate is {{ $value | printf \"%.1f\" }}%."
+
+      # ── High P95 Latency > 1 s ─────────────────────────
+      - alert: HighApiLatency
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(http_request_duration_seconds_bucket{job="student-app-api"}[5m])) by (le)
+          ) > 1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "API p95 latency above 1 second"
+          description: "p95 latency is {{ $value | printf \"%.2f\" }}s."
+
+      # ── CPU Usage > 80 % ───────────────────────────────
+      - alert: HighCpuUsage
+        expr: |
+          100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "CPU usage above 80%"
+          description: "CPU is at {{ $value | printf \"%.1f\" }}%."
+
+      # ── Memory Usage > 75 % ────────────────────────────
+      - alert: HighMemoryUsage
+        expr: |
+          (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 75
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Memory usage above 75%"
+          description: "Memory is at {{ $value | printf \"%.1f\" }}%."
+
+      # ── Login Failure Spike ────────────────────────────
+      - alert: LoginFailureSpike
+        expr: |
+          sum(rate(auth_login_total{job="student-app-api", status="failure"}[5m])) > 0.5
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High rate of login failures"
+          description: "Login failures rate is {{ $value | printf \"%.2f\" }}/s."
+
+      # ── DB Connection Saturation ───────────────────────
+      - alert: DbConnectionSaturation
+        expr: |
+          pg_stat_activity_count{datname="studentdb"} / pg_settings_max_connections > 0.85
+        for: 3m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PostgreSQL connections nearing saturation"
+          description: "{{ $value | printf \"%.0f\" }}% of max connections in use."
