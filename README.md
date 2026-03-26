@@ -597,6 +597,8 @@ The GitHub Actions workflow (`.github/workflows/ci.yml`) triggers on **push** an
 
 ## Troubleshooting
 
+### Build & Runtime Issues
+
 | Problem                                | Solution                                                         |
 |----------------------------------------|------------------------------------------------------------------|
 | Frontend build fails with ajv error    | Ensure `ajv@^8.12.0` is in `package.json` dependencies          |
@@ -604,8 +606,49 @@ The GitHub Actions workflow (`.github/workflows/ci.yml`) triggers on **push** an
 | 422 error shows `[object Object]`      | Error handling extracts `.msg` from array-format FastAPI errors   |
 | `docker-compose up` version warning    | Remove `version: "3.9"` from `docker-compose.yml` (deprecated)  |
 | Port 5050 conflict for pgAdmin         | pgAdmin is mapped to **5051** instead                            |
-| Git dubious ownership in runner        | Run `git config --system --add safe.directory '*'`               |
-| Runner shows offline on GitHub         | Start with `D:\KJC\actions-runner\run.cmd`                       |
-| `$GITHUB_WORKSPACE` empty on Windows  | Use `${{ github.workspace }}` in workflow YAML instead           |
 | Backend tests need database            | Tests use in-memory SQLite — no database required                |
 | Selenium tests fail without app        | Start the app first: `docker-compose up -d`                      |
+| Jest `Cannot find module @testing-library/dom` | Add `@testing-library/dom@^10.4.0` to `devDependencies`   |
+| Jest `Cannot use import statement` (axios) | Add `transformIgnorePatterns: ["node_modules/(?!axios)/"]` to Jest config in `package.json` |
+
+### Self-Hosted Runner Issues
+
+| Problem                                | Solution                                                         |
+|----------------------------------------|------------------------------------------------------------------|
+| **Git dubious ownership** — `detected dubious ownership in repository` | Run `git config --system --add safe.directory '*'` in an elevated terminal. Also create `C:\ProgramData\Git\config` with `[safe]\n\tdirectory = *` |
+| **`$GITHUB_WORKSPACE` empty on Windows** | Use `${{ github.workspace }}` in workflow YAML — it's a GitHub expression resolved before the shell runs |
+| **Runner shows offline on GitHub** | Check if the runner service is running: `Get-Service actions.runner.*`. Start with: `Start-Service <service-name>` or manually with `run.cmd` |
+| **Runner registered to wrong repo** | Check `.runner` file: `Get-Content <runner-dir>\.runner -Raw`. Re-register with `config.cmd remove` then `config.cmd --url <repo-url> --token <token>` |
+| **Multiple repos need a runner** | Option 1: Register runner at org level. Option 2: Create separate runner folders per repo |
+| **`No Python 3.12 found` + registry error** | Self-hosted runners can't install Python via `actions/setup-python`. Remove the action and use system-installed Python (`python --version` to verify) |
+| **Docker `Access is denied` in runner** | Add the runner's service account to the `docker-users` group (elevated): `net localgroup docker-users "NT AUTHORITY\SERVICE" /add`. Then restart the runner service |
+| **Docker build fails in CI** | Ensure Docker Desktop is running, the runner service account is in `docker-users`, and restart the service after group change |
+| **`error during connect: ... docker client must be run with elevated privileges`** | Runner service user lacks Docker access. Fix: add `Users` to `docker-users` group → restart runner service |
+
+### Useful Diagnostic Commands
+
+```powershell
+# Check runner service status
+Get-Service actions.runner.*
+
+# Check which repo a runner is registered to
+Get-Content <runner-dir>\.runner -Raw
+
+# Check docker-users group membership
+net localgroup docker-users
+
+# Check system Git safe directory config
+git config --system --list | Select-String "safe"
+
+# Verify Docker access
+docker ps
+
+# Check runner process owner
+Get-Process Runner.Listener -ErrorAction SilentlyContinue
+
+# Start runner service (elevated)
+Start-Service "actions.runner.christopher-pb-StudentAppRepo.YY282381"
+
+# View runner logs
+Get-ChildItem <runner-dir>\_diag\*.log | Sort-Object LastWriteTime -Descending | Select-Object -First 5
+```

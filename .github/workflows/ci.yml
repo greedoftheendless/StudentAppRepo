@@ -68,5 +68,4 @@ jobs:
         run: docker build -t student-app-frontend:${{ github.sha }} ./frontend
 
       - name: Verify images
-        run: |
-          docker images | grep student-app
+        run: docker images | Select-String "student-app"
